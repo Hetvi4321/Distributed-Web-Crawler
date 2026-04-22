@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Search Engine</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      margin: 0;
+      padding: 0;
+      color: white;
+      text-align: center;
+    }
+
+    .container {
+      margin-top: 100px;
+    }
+
+    h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 300px;
+      padding: 12px;
+      border-radius: 25px 0 0 25px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      background-color: #ff7a18;
+      color: white;
+      font-size: 16px;
+      border-radius: 0 25px 25px 0;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #ff9a3c;
+    }
+
+    #results {
+      list-style: none;
+      padding: 0;
+      width: 60%;
+      margin: auto;
+    }
+
+    li {
+      background: white;
+      color: black;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: left;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .url {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .score {
+      color: #777;
+      font-size: 14px;
+    }
+
+    .no-results {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<div class="container">
+  <h1>🔍 My Search Engine</h1>
+
+  <div class="search-box">
+    <input type="text" id="query" placeholder="Search something...">
+    <button onclick="search()">Search</button>
+  </div>
+
+  <ul id="results"></ul>
+  <p id="message" class="no-results"></p>
+</div>
+
+<script>
+function search() {
+  let q = document.getElementById("query").value;
+
+  fetch("http://localhost:5003/search?q=" + encodeURIComponent(q))
+    .then(res => res.json())
+    .then(data => {
+      let list = document.getElementById("results");
+      let message = document.getElementById("message");
+
+      list.innerHTML = "";
+      message.innerHTML = "";
+
+      if (data.length === 0) {
+        message.innerHTML = "No results found.";
+        return;
+      }
+
+      data.forEach(item => {
+        let li = document.createElement("li");
+
+        li.innerHTML = `
+          <div class="url">${item.url}</div>
+          <div class="score">Score: ${item.score || item.freq}</div>
+        `;
+
+        list.appendChild(li);
+      });
+    })
+    .catch(() => {
+      document.getElementById("message").innerHTML = "Error connecting to server.";
+    });
+}
+</script>
+
+</body>
+</html>
